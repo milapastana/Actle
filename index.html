@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACTLE</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+        min-height: 100vh;
+    }
+
+    header {
+        text-align: center;
+        padding: 25px 15px 15px;
+        border-bottom: 1px solid #333;
+    }
+
+    .logo {
+        font-size: 42px;
+        font-weight: 900;
+        letter-spacing: 5px;
+    }
+
+    .subtitle {
+        color: #aaa;
+        margin-top: 5px;
+    }
+
+    .game {
+        max-width: 900px;
+        margin: auto;
+        padding: 25px 15px;
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 100%;
+        padding: 17px;
+        font-size: 17px;
+        border-radius: 10px;
+        border: 1px solid #444;
+        background: #222;
+        color: white;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #777;
+    }
+
+    .suggestions {
+        position: absolute;
+        width: 100%;
+        background: #222;
+        border: 1px solid #444;
+        border-top: none;
+        z-index: 10;
+        border-radius: 0 0 10px 10px;
+        overflow: hidden;
+    }
+
+    .suggestion {
+        padding: 14px;
+        cursor: pointer;
+    }
+
+    .suggestion:hover {
+        background: #333;
+    }
+
+    .attempts {
+        text-align: center;
+        color: #aaa;
+        margin-bottom: 20px;
+    }
+
+    .table {
+        overflow-x: auto;
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 1.4fr repeat(6, 1fr);
+        gap: 5px;
+        min-width: 750px;
+        margin-bottom: 5px;
+    }
+
+    .cell {
+        min-height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 8px;
+        border-radius: 7px;
+        background: #252525;
+        font-size: 14px;
+    }
+
+    .header-row .cell {
+        background: #181818;
+        color: #aaa;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .green {
+        background: #238636;
+    }
+
+    .yellow {
+        background: #9a7b00;
+    }
+
+    .black {
+        background: #303030;
+        color: #aaa;
+    }
+
+    .actor-name {
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .message {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    button {
+        border: none;
+        background: white;
+        color: black;
+        padding: 12px 22px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    button:hover {
+        background: #ddd;
+    }
+
+    .rules {
+        margin-top: 35px;
+        padding: 20px;
+        background: #1b1b1b;
+        border-radius: 10px;
+        color: #bbb;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+        .logo {
+            font-size: 34px;
+        }
+
+        .game {
+            padding: 20px 10px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">ACTLE</div>
+    <div class="subtitle">Guess today's actor</div>
+</header>
+
+<div class="game">
+
+    <div class="search-box">
+        <input
+            id="search"
+            type="text"
+            placeholder="Digite o nome de um ator..."
+            autocomplete="off"
+        >
+        <div id="suggestions" class="suggestions"></div>
+    </div>
+
+    <div class="attempts">
+        Tentativas: <span id="attemptCount">0</span>/10
+    </div>
+
+    <div class="table">
+
+        <div class="row header-row">
+            <div class="cell">ATOR</div>
+            <div class="cell">NASCIMENTO</div>
+            <div class="cell">ESTOUROU</div>
+            <div class="cell">POPULARIDADE</div>
+            <div class="cell">GÊNERO</div>
+            <div class="cell">NACIONALIDADE</div>
+            <div class="cell">SEXO</div>
+        </div>
+
+        <div id="results"></div>
+
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div style="text-align:center">
+        <button id="shareButton" style="display:none;">
+            Compartilhar resultado
+        </button>
+    </div>
+
+    <div class="rules">
+        <b>Como jogar:</b><br>
+        Descubra o ator do dia em até 10 tentativas.
+        <br><br>
+        🟩 = correto<br>
+        🟨 = próximo<br>
+        ⬛ = incorreto
+    </div>
+
+</div>
+
+<script>
+
+/* =========================================
+   ATORES DO PROTÓTIPO
+   ========================================= */
+
+const actors = [
+
+{
+    name: "Tom Holland",
+    birth: 1996,
+    breakthrough: 2016,
+    popularity: 12,
+    genre: "Ação",
+    nationality: "Britânico",
+    sex: "Masculino"
+},
+
+{
+    name: "Leonardo DiCaprio",
+    birth: 1974,
+    breakthrough: 1997,
+    popularity: 1,
+    genre: "Drama",
+    nationality: "Americano",
+    sex: "Masculino"
+},
+
+{
+    name: "Brad Pitt",
+    birth: 1963,
+    breakthrough: 1991,
+    popularity: 3,
+    genre: "Drama",
+    nationality: "Americano",
+    sex: "Masculino"
+},
+
+{
+    name: "Emma Stone",
+    birth: 1988,
+    breakthrough: 2010,
+    popularity: 8,
+    genre: "Comédia",
+    nationality: "Americana",
+    sex: "Feminino"
+},
+
+{
+    name: "Jennifer Lawrence",
+    birth: 1990,
+    breakthrough: 2012,
+    popularity: 5,
+    genre: "Drama",
+    nationality: "Americana",
+    sex: "Feminino"
+},
+
+{
+    name: "Robert Downey Jr.",
+    birth: 1965,
+    breakthrough: 2008,
+    popularity: 2,
+    genre: "Ação",
+    nationality: "Americano",
+    sex: "Masculino"
+},
+
+{
+    name: "Margot Robbie",
+    birth: 1990,
+    breakthrough: 2013,
+    popularity: 6,
+    genre: "Drama",
+    nationality: "Australiana",
+    sex: "Feminino"
+},
+
+{
+    name: "Ryan Gosling",
+    birth: 1980,
+    breakthrough: 2004,
+    popularity: 7,
+    genre: "Drama",
+    nationality: "Canadense",
+    sex: "Masculino"
+},
+
+{
+    name: "Zendaya",
+    birth: 1996,
+    breakthrough: 2017,
+    popularity: 10,
+    genre: "Drama",
+    nationality: "Americana",
+    sex: "Feminino"
+},
+
+{
+    name: "Dwayne Johnson",
+    birth: 1972,
+    breakthrough: 2001,
+    popularity: 4,
+    genre: "Ação",
+    nationality: "Americano",
+    sex: "Masculino"
+},
+
+{
+    name: "Anne Hathaway",
+    birth: 1982,
+    breakthrough: 2001,
+    popularity: 15,
+    genre: "Comédia",
+    nationality: "Americana",
+    sex: "Feminino"
+},
+
+{
+    name: "Chris Hemsworth",
+    birth: 1983,
+    breakthrough: 2011,
+    popularity: 11,
+    genre: "Ação",
+    nationality: "Australiano",
+    sex: "Masculino"
+}
+
+];
+
+
+/* =========================================
+   ATOR DO DIA
+   ========================================= */
+
+function getDailyActor() {
+
+    const start = new Date("2026-01-01");
+    const today = new Date();
+
+    const difference =
+        Math.floor(
+            (today - start) / (1000 * 60 * 60 * 24)
+        );
+
+    const index =
+        ((difference % actors.length) + actors.length)
+        % actors.length;
+
+    return actors[index];
+}
+
+const secretActor = getDailyActor();
+
+
+/* =========================================
+   ELEMENTOS
+   ========================================= */
+
+const search = document.getElementById("search");
+const suggestions = document.getElementById("suggestions");
+const results = document.getElementById("results");
+const attemptCount = document.getElementById("attemptCount");
+const message = document.getElementById("message");
+const shareButton = document.getElementById("shareButton");
+
+let attempts = 0;
+let gameOver = false;
+let shareGrid = [];
+
+
+/* =========================================
+   PESQUISA
+   ========================================= */
+
+search.addEventListener("input", function() {
+
+    const text = search.value.toLowerCase().trim();
+
+    suggestions.innerHTML = "";
+
+    if (!text || gameOver) return;
+
+    const matches = actors
+        .filter(actor =>
+            actor.name.toLowerCase().includes(text)
+        )
+        .slice(0, 6);
+
+    matches.forEach(actor => {
+
+        const item = document.createElement("div");
+
+        item.className = "suggestion";
+        item.textContent = actor.name;
+
+        item.onclick = function() {
+            makeGuess(actor);
+        };
+
+        suggestions.appendChild(item);
+
+    });
+
+});
+
+
+/* =========================================
+   FAZER PALPITE
+   ========================================= */
+
+function makeGuess(actor) {
+
+    if (gameOver) return;
+
+    if (attempts >= 10) return;
+
+    attempts++;
+
+    attemptCount.textContent = attempts;
+
+    suggestions.innerHTML = "";
+    search.value = "";
+
+    const row = document.createElement("div");
+
+    row.className = "row";
+
+    const nameCell =
+        createCell(
+            actor.name,
+            actor.name === secretActor.name
+                ? "green"
+                : "black"
+        );
+
+    row.appendChild(nameCell);
+
+    row.appendChild(
+        compareNumber(actor.birth, secretActor.birth)
+    );
+
+    row.appendChild(
+        compareNumber(actor.breakthrough, secretActor.breakthrough)
+    );
+
+    row.appendChild(
+        comparePopularity(actor.popularity, secretActor.popularity)
+    );
+
+    row.appendChild(
+        compareText(actor.genre, secretActor.genre)
+    );
+
+    row.appendChild(
+        compareText(actor.nationality, secretActor.nationality)
+    );
+
+    row.appendChild(
+        compareText(actor.sex, secretActor.sex)
+    );
+
+    results.prepend(row);
+
+    const colors = Array.from(row.children)
+        .slice(1)
+        .map(cell => {
+
+            if (cell.classList.contains("green"))
+                return "🟩";
+
+            if (cell.classList.contains("yellow"))
+                return "🟨";
+
+            return "⬛";
+        });
+
+    shareGrid.push(colors);
+
+    if (actor.name === secretActor.name) {
+
+        gameOver = true;
+
+        message.innerHTML =
+            "🎉 ACERTOU!<br>" +
+            "<span style='font-size:16px'>Era " +
+            secretActor.name +
+            "!</span>";
+
+        shareButton.style.display = "inline-block";
+
+    } else if (attempts >= 10) {
+
+        gameOver = true;
+
+        message.innerHTML =
+            "😢 Fim das tentativas.<br>" +
+            "<span style='font-size:16px'>O ator era " +
+            secretActor.name +
+            ".</span>";
+
+        shareButton.style.display = "inline-block";
+    }
+}
+
+
+/* =========================================
+   COMPARAÇÕES
+   ========================================= */
+
+function createCell(text, color) {
+
+    const cell = document.createElement("div");
+
+    cell.className = "cell " + color;
+
+    cell.textContent = text;
+
+    return cell;
+}
+
+
+function compareText(value, secret) {
+
+    if (value === secret) {
+
+        return createCell(value, "green");
+
+    }
+
+    return createCell(value, "black");
+}
+
+
+function compareNumber(value, secret) {
+
+    if (value === secret) {
+
+        return createCell(value, "green");
+
+    }
+
+    const difference = Math.abs(value - secret);
+
+    if (difference <= 5) {
+
+        let arrow = value < secret ? " ↑" : " ↓";
+
+        return createCell(
+            value + arrow,
+            "yellow"
+        );
+
+    }
+
+    let arrow = value < secret ? " ↑" : " ↓";
+
+    return createCell(
+        value + arrow,
+        "black"
+    );
+}
+
+
+function comparePopularity(value, secret) {
+
+    if (value === secret) {
+
+        return createCell(
+            "#" + value,
+            "green"
+        );
+
+    }
+
+    const difference = Math.abs(value - secret);
+
+    if (difference <= 10) {
+
+        let arrow = value > secret ? " ↓" : " ↑";
+
+        return createCell(
+            "#" + value + arrow,
+            "yellow"
+        );
+
+    }
+
+    let arrow = value > secret ? " ↓" : " ↑";
+
+    return createCell(
+        "#" + value + arrow,
+        "black"
+    );
+}
+
+
+/* =========================================
+   COMPARTILHAR
+   ========================================= */
+
+shareButton.onclick = function() {
+
+    let text =
+        "🎬 ACTLE\n" +
+        "Actle de hoje\n\n";
+
+    shareGrid.forEach(row => {
+
+        text += row.join("") + "\n";
+
+    });
+
+    text += "\n" + attempts + "/10";
+
+    if (navigator.share) {
+
+        navigator.share({
+            title: "ACTLE",
+            text: text
+        });
+
+    } else {
+
+        navigator.clipboard.writeText(text);
+
+        alert("Resultado copiado!");
+
+    }
+
+};
+
+</script>
+
+</body>
+  </html>
