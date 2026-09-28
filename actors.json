@@ -1,0 +1,110 @@
+[
+  {
+    "nome": "Tom Holland",
+    "anoNascimento": 1996,
+    "anoEstourou": 2016,
+    "popularidade": 12,
+    "genero": "Ação",
+    "nacionalidade": "Britânico",
+    "sexo": "Masculino"
+  },
+  {
+    "nome": "Leonardo DiCaprio",
+    "anoNascimento": 1974,
+    "anoEstourou": 1997,
+    "popularidade": 1,
+    "genero": "Drama",
+    "nacionalidade": "Americano",
+    "sexo": "Masculino"
+  },
+  {
+    "nome": "Emma Stone",
+    "anoNascimento": 1988,
+    "anoEstourou": 2010,
+    "popularidade": 8,
+    "genero": "Comédia",
+    "nacionalidade": "Americana",
+    "sexo": "Feminino"
+  },
+  {
+    "nome": "Brad Pitt",
+    "anoNascimento": 1963,
+    "anoEstourou": 1991,
+    "popularidade": 3,
+    "genero": "Drama",
+    "nacionalidade": "Americano",
+    "sexo": "Masculino"
+  },
+  {
+    "nome": "Jennifer Lawrence",
+    "anoNascimento": 1990,
+    "anoEstourou": 2012,
+    "popularidade": 5,
+    "genero": "Drama",
+    "nacionalidade": "Americana",
+    "sexo": "Feminino"
+  },
+  {
+    "nome": "Robert Downey Jr.",
+    "anoNascimento": 1965,
+    "anoEstourou": 2008,
+    "popularidade": 2,
+    "genero": "Ação",
+    "nacionalidade": "Americano",
+    "sexo": "Masculino"
+  },
+  {
+    "nome": "Margot Robbie",
+    "anoNascimento": 1990,
+    "anoEstourou": 2013,
+    "popularidade": 6,
+    "genero": "Drama",
+    "nacionalidade": "Australiana",
+    "sexo": "Feminino"
+  },
+  {
+    "nome": "Ryan Gosling",
+    "anoNascimento": 1980,
+    "anoEstourou": 2004,
+    "popularidade": 7,
+    "genero": "Drama",
+    "nacionalidade": "Canadense",
+    "sexo": "Masculino"
+  },
+  {
+    "nome": "Zendaya",
+    "anoNascimento": 1996,
+    "anoEstourou": 2017,
+    "popularidade": 10,
+    "genero": "Drama",
+    "nacionalidade": "Americana",
+    "sexo": "Feminino"
+  },
+  {
+    "nome": "Dwayne Johnson",
+    "anoNascimento": 1972,
+    "anoEstourou": 2001,
+    "popularidade": 4,
+    "genero": "Ação",
+    "nacionalidade": "Americano",
+    "sexo": "Masculino"
+  },
+  {
+    "nome": "Anne Hathaway",
+    "anoNascimento": 1982,
+    "anoEstourou": 2001,
+    "popularidade": 15,
+    "genero": "Comédia",
+    "nacionalidade": "Americana",
+    "sexo": "Feminino"
+  },
+  {
+    "nome": "Chris Hemsworth",
+    "anoNascimento": 1983,
+    "anoEstourou": 2011,
+    "popularidade": 11,
+    "genero": "Ação",
+    "nacionalidade": "Australiano",
+    "sexo": "Masculino"
+  }
+]
