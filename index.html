@@ -3,673 +3,936 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ACTLE</title>
+
+<title>ACTLE — Adivinhe o Ator</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
 
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #111;
-        color: white;
-        min-height: 100vh;
-    }
+* {
+    box-sizing: border-box;
+}
 
-    header {
-        text-align: center;
-        padding: 25px 15px 15px;
-        border-bottom: 1px solid #333;
-    }
+body {
+    margin: 0;
+    background: #111;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+    text-align: center;
+    padding: 24px 15px 18px;
+    border-bottom: 1px solid #333;
+}
+
+.logo {
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 6px;
+}
+
+.subtitle {
+    margin-top: 7px;
+    color: #aaa;
+    font-size: 15px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 25px 15px 40px;
+}
+
+.search-area {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto 18px;
+}
+
+#search {
+    width: 100%;
+    padding: 16px 18px;
+    background: #222;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 10px;
+    font-size: 17px;
+    outline: none;
+}
+
+#search:focus {
+    border-color: #777;
+}
+
+#suggestions {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    left: 0;
+    background: #222;
+    border: 1px solid #444;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    z-index: 50;
+}
+
+.suggestion {
+    padding: 14px 16px;
+    cursor: pointer;
+}
+
+.suggestion:hover {
+    background: #333;
+}
+
+.attempts {
+    text-align: center;
+    color: #aaa;
+    margin: 15px 0 22px;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.row {
+    display: grid;
+    grid-template-columns:
+        1.45fr
+        1fr
+        1fr
+        1fr
+        1.15fr
+        1.2fr
+        .8fr;
+
+    gap: 5px;
+    min-width: 850px;
+    margin-bottom: 5px;
+}
+
+.cell {
+    min-height: 70px;
+    padding: 8px;
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    font-size: 13px;
+    background: #252525;
+}
+
+.header .cell {
+    min-height: 48px;
+    background: #191919;
+    color: #aaa;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.actor-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.green {
+    background: #238636;
+}
+
+.yellow {
+    background: #9a7b00;
+}
+
+.black {
+    background: #303030;
+    color: #aaa;
+}
+
+#message {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 25px;
+    line-height: 1.5;
+}
+
+#share {
+    display: none;
+    margin: 18px auto;
+    padding: 12px 22px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: white;
+    color: black;
+
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.instructions {
+    max-width: 700px;
+    margin: 35px auto 0;
+
+    padding: 20px;
+
+    background: #1b1b1b;
+    border-radius: 10px;
+
+    color: #aaa;
+    line-height: 1.6;
+}
+
+.loading {
+    text-align: center;
+    color: #888;
+    padding: 30px;
+}
+
+@media (max-width: 600px) {
 
     .logo {
-        font-size: 42px;
-        font-weight: 900;
-        letter-spacing: 5px;
+        font-size: 34px;
     }
 
-    .subtitle {
-        color: #aaa;
-        margin-top: 5px;
+    .container {
+        padding: 20px 8px 35px;
     }
 
-    .game {
-        max-width: 900px;
-        margin: auto;
-        padding: 25px 15px;
-    }
+}
 
-    .search-box {
-        position: relative;
-        margin-bottom: 20px;
-    }
-
-    input {
-        width: 100%;
-        padding: 17px;
-        font-size: 17px;
-        border-radius: 10px;
-        border: 1px solid #444;
-        background: #222;
-        color: white;
-        outline: none;
-    }
-
-    input:focus {
-        border-color: #777;
-    }
-
-    .suggestions {
-        position: absolute;
-        width: 100%;
-        background: #222;
-        border: 1px solid #444;
-        border-top: none;
-        z-index: 10;
-        border-radius: 0 0 10px 10px;
-        overflow: hidden;
-    }
-
-    .suggestion {
-        padding: 14px;
-        cursor: pointer;
-    }
-
-    .suggestion:hover {
-        background: #333;
-    }
-
-    .attempts {
-        text-align: center;
-        color: #aaa;
-        margin-bottom: 20px;
-    }
-
-    .table {
-        overflow-x: auto;
-    }
-
-    .row {
-        display: grid;
-        grid-template-columns: 1.4fr repeat(6, 1fr);
-        gap: 5px;
-        min-width: 750px;
-        margin-bottom: 5px;
-    }
-
-    .cell {
-        min-height: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 8px;
-        border-radius: 7px;
-        background: #252525;
-        font-size: 14px;
-    }
-
-    .header-row .cell {
-        background: #181818;
-        color: #aaa;
-        font-size: 12px;
-        font-weight: bold;
-    }
-
-    .green {
-        background: #238636;
-    }
-
-    .yellow {
-        background: #9a7b00;
-    }
-
-    .black {
-        background: #303030;
-        color: #aaa;
-    }
-
-    .actor-name {
-        font-weight: bold;
-        font-size: 15px;
-    }
-
-    .message {
-        text-align: center;
-        margin-top: 25px;
-        font-size: 22px;
-        font-weight: bold;
-    }
-
-    button {
-        border: none;
-        background: white;
-        color: black;
-        padding: 12px 22px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        margin-top: 15px;
-    }
-
-    button:hover {
-        background: #ddd;
-    }
-
-    .rules {
-        margin-top: 35px;
-        padding: 20px;
-        background: #1b1b1b;
-        border-radius: 10px;
-        color: #bbb;
-        line-height: 1.6;
-    }
-
-    @media (max-width: 600px) {
-        .logo {
-            font-size: 34px;
-        }
-
-        .game {
-            padding: 20px 10px;
-        }
-    }
 </style>
 </head>
 
 <body>
 
 <header>
-    <div class="logo">ACTLE</div>
-    <div class="subtitle">Guess today's actor</div>
+
+    <div class="logo">
+        ACTLE
+    </div>
+
+    <div class="subtitle">
+        Adivinhe o ator de hoje
+    </div>
+
 </header>
 
-<div class="game">
 
-    <div class="search-box">
+<main class="container">
+
+    <div class="search-area">
+
         <input
             id="search"
             type="text"
             placeholder="Digite o nome de um ator..."
             autocomplete="off"
         >
-        <div id="suggestions" class="suggestions"></div>
+
+        <div id="suggestions"></div>
+
     </div>
+
 
     <div class="attempts">
-        Tentativas: <span id="attemptCount">0</span>/10
+
+        Tentativas:
+        <span id="attempts">0</span>/10
+
     </div>
 
-    <div class="table">
 
-        <div class="row header-row">
-            <div class="cell">ATOR</div>
-            <div class="cell">NASCIMENTO</div>
-            <div class="cell">ESTOUROU</div>
-            <div class="cell">POPULARIDADE</div>
-            <div class="cell">GÊNERO</div>
-            <div class="cell">NACIONALIDADE</div>
-            <div class="cell">SEXO</div>
+    <div class="table-wrapper">
+
+        <div class="row header">
+
+            <div class="cell">
+                ATOR
+            </div>
+
+            <div class="cell">
+                ANO DE NASCIMENTO
+            </div>
+
+            <div class="cell">
+                ANO QUE ESTOUROU
+            </div>
+
+            <div class="cell">
+                POPULARIDADE
+            </div>
+
+            <div class="cell">
+                GÊNERO
+            </div>
+
+            <div class="cell">
+                NACIONALIDADE
+            </div>
+
+            <div class="cell">
+                SEXO
+            </div>
+
         </div>
 
-        <div id="results"></div>
+
+        <div id="results">
+
+            <div class="loading">
+                Carregando atores...
+            </div>
+
+        </div>
 
     </div>
 
-    <div id="message" class="message"></div>
 
-    <div style="text-align:center">
-        <button id="shareButton" style="display:none;">
-            Compartilhar resultado
-        </button>
-    </div>
+    <div id="message"></div>
 
-    <div class="rules">
-        <b>Como jogar:</b><br>
-        Descubra o ator do dia em até 10 tentativas.
+    <button id="share">
+        Compartilhar resultado
+    </button>
+
+
+    <div class="instructions">
+
+        <b>Como jogar:</b>
+
+        <br>
+
+        Tente descobrir o ator secreto em até
+        <b>10 tentativas</b>.
+
         <br><br>
-        🟩 = correto<br>
-        🟨 = próximo<br>
+
+        🟩 = correto
+
+        <br>
+
+        🟨 = próximo
+
+        <br>
+
         ⬛ = incorreto
+
+        <br><br>
+
+        As setas mostram se o valor do seu palpite
+        precisa ser maior ou menor.
+
     </div>
 
-</div>
+</main>
+
 
 <script>
 
-/* =========================================
-   ATORES DO PROTÓTIPO
-   ========================================= */
+/* =====================================================
+   DADOS
+   ===================================================== */
 
-const actors = [
+let atores = [];
 
-{
-    name: "Tom Holland",
-    birth: 1996,
-    breakthrough: 2016,
-    popularity: 12,
-    genre: "Ação",
-    nationality: "Britânico",
-    sex: "Masculino"
-},
+let atorSecreto = null;
 
-{
-    name: "Leonardo DiCaprio",
-    birth: 1974,
-    breakthrough: 1997,
-    popularity: 1,
-    genre: "Drama",
-    nationality: "Americano",
-    sex: "Masculino"
-},
+let tentativas = 0;
 
-{
-    name: "Brad Pitt",
-    birth: 1963,
-    breakthrough: 1991,
-    popularity: 3,
-    genre: "Drama",
-    nationality: "Americano",
-    sex: "Masculino"
-},
+let acabou = false;
 
-{
-    name: "Emma Stone",
-    birth: 1988,
-    breakthrough: 2010,
-    popularity: 8,
-    genre: "Comédia",
-    nationality: "Americana",
-    sex: "Feminino"
-},
+let resultadoCompartilhar = [];
 
-{
-    name: "Jennifer Lawrence",
-    birth: 1990,
-    breakthrough: 2012,
-    popularity: 5,
-    genre: "Drama",
-    nationality: "Americana",
-    sex: "Feminino"
-},
 
-{
-    name: "Robert Downey Jr.",
-    birth: 1965,
-    breakthrough: 2008,
-    popularity: 2,
-    genre: "Ação",
-    nationality: "Americano",
-    sex: "Masculino"
-},
+/* =====================================================
+   CARREGAR A LISTA ATUALIZADA
+   ===================================================== */
 
-{
-    name: "Margot Robbie",
-    birth: 1990,
-    breakthrough: 2013,
-    popularity: 6,
-    genre: "Drama",
-    nationality: "Australiana",
-    sex: "Feminino"
-},
+async function carregarAtores() {
 
-{
-    name: "Ryan Gosling",
-    birth: 1980,
-    breakthrough: 2004,
-    popularity: 7,
-    genre: "Drama",
-    nationality: "Canadense",
-    sex: "Masculino"
-},
+    try {
 
-{
-    name: "Zendaya",
-    birth: 1996,
-    breakthrough: 2017,
-    popularity: 10,
-    genre: "Drama",
-    nationality: "Americana",
-    sex: "Feminino"
-},
+        const resposta =
+            await fetch(
+                "actors.json?atualizacao=" +
+                Date.now()
+            );
 
-{
-    name: "Dwayne Johnson",
-    birth: 1972,
-    breakthrough: 2001,
-    popularity: 4,
-    genre: "Ação",
-    nationality: "Americano",
-    sex: "Masculino"
-},
+        if (!resposta.ok) {
+            throw new Error(
+                "Não foi possível carregar os atores."
+            );
+        }
 
-{
-    name: "Anne Hathaway",
-    birth: 1982,
-    breakthrough: 2001,
-    popularity: 15,
-    genre: "Comédia",
-    nationality: "Americana",
-    sex: "Feminino"
-},
+        atores = await resposta.json();
 
-{
-    name: "Chris Hemsworth",
-    birth: 1983,
-    breakthrough: 2011,
-    popularity: 11,
-    genre: "Ação",
-    nationality: "Australiano",
-    sex: "Masculino"
+        document.querySelector(".loading").remove();
+
+        definirAtorDoDia();
+
+    }
+
+    catch (erro) {
+
+        document.querySelector(".loading").innerHTML =
+            "Não foi possível carregar os atores.";
+
+        console.error(erro);
+
+    }
+
 }
 
-];
 
-
-/* =========================================
+/* =====================================================
    ATOR DO DIA
-   ========================================= */
+   ===================================================== */
 
-function getDailyActor() {
+function definirAtorDoDia() {
 
-    const start = new Date("2026-01-01");
-    const today = new Date();
+    if (!atores.length) return;
 
-    const difference =
+
+    const inicio =
+        new Date("2026-01-01T00:00:00");
+
+
+    const agora =
+        new Date();
+
+
+    const dias =
         Math.floor(
-            (today - start) / (1000 * 60 * 60 * 24)
+            (agora - inicio) /
+            (1000 * 60 * 60 * 24)
         );
 
-    const index =
-        ((difference % actors.length) + actors.length)
-        % actors.length;
 
-    return actors[index];
+    const indice =
+        dias % atores.length;
+
+
+    atorSecreto =
+        atores[indice];
+
 }
 
-const secretActor = getDailyActor();
 
-
-/* =========================================
+/* =====================================================
    ELEMENTOS
-   ========================================= */
+   ===================================================== */
 
-const search = document.getElementById("search");
-const suggestions = document.getElementById("suggestions");
-const results = document.getElementById("results");
-const attemptCount = document.getElementById("attemptCount");
-const message = document.getElementById("message");
-const shareButton = document.getElementById("shareButton");
+const campoPesquisa =
+    document.getElementById("search");
 
-let attempts = 0;
-let gameOver = false;
-let shareGrid = [];
+const sugestoes =
+    document.getElementById("suggestions");
+
+const resultados =
+    document.getElementById("results");
+
+const contador =
+    document.getElementById("attempts");
+
+const mensagem =
+    document.getElementById("message");
+
+const botaoCompartilhar =
+    document.getElementById("share");
 
 
-/* =========================================
+/* =====================================================
    PESQUISA
-   ========================================= */
+   ===================================================== */
 
-search.addEventListener("input", function() {
+campoPesquisa.addEventListener(
+    "input",
+    function() {
 
-    const text = search.value.toLowerCase().trim();
-
-    suggestions.innerHTML = "";
-
-    if (!text || gameOver) return;
-
-    const matches = actors
-        .filter(actor =>
-            actor.name.toLowerCase().includes(text)
-        )
-        .slice(0, 6);
-
-    matches.forEach(actor => {
-
-        const item = document.createElement("div");
-
-        item.className = "suggestion";
-        item.textContent = actor.name;
-
-        item.onclick = function() {
-            makeGuess(actor);
-        };
-
-        suggestions.appendChild(item);
-
-    });
-
-});
+        const texto =
+            campoPesquisa.value
+            .toLowerCase()
+            .trim();
 
 
-/* =========================================
-   FAZER PALPITE
-   ========================================= */
+        sugestoes.innerHTML = "";
 
-function makeGuess(actor) {
 
-    if (gameOver) return;
+        if (
+            !texto ||
+            acabou ||
+            !atores.length
+        ) {
 
-    if (attempts >= 10) return;
+            return;
 
-    attempts++;
+        }
 
-    attemptCount.textContent = attempts;
 
-    suggestions.innerHTML = "";
-    search.value = "";
+        const encontrados =
+            atores
+            .filter(
+                ator =>
+                    ator.nome
+                    .toLowerCase()
+                    .includes(texto)
+            )
+            .slice(0, 8);
 
-    const row = document.createElement("div");
 
-    row.className = "row";
+        encontrados.forEach(
+            ator => {
 
-    const nameCell =
-        createCell(
-            actor.name,
-            actor.name === secretActor.name
+                const elemento =
+                    document.createElement("div");
+
+
+                elemento.className =
+                    "suggestion";
+
+
+                elemento.textContent =
+                    ator.nome;
+
+
+                elemento.onclick =
+                    function() {
+
+                        fazerPalpite(ator);
+
+                    };
+
+
+                sugestoes.appendChild(
+                    elemento
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/* =====================================================
+   PALPITE
+   ===================================================== */
+
+function fazerPalpite(ator) {
+
+    if (acabou) return;
+
+    if (tentativas >= 10) return;
+
+
+    tentativas++;
+
+    contador.textContent =
+        tentativas;
+
+
+    campoPesquisa.value = "";
+
+    sugestoes.innerHTML = "";
+
+
+    const linha =
+        document.createElement("div");
+
+
+    linha.className = "row";
+
+
+    linha.appendChild(
+        criarCelula(
+            ator.nome,
+            ator.nome === atorSecreto.nome
                 ? "green"
                 : "black"
-        );
-
-    row.appendChild(nameCell);
-
-    row.appendChild(
-        compareNumber(actor.birth, secretActor.birth)
+        )
     );
 
-    row.appendChild(
-        compareNumber(actor.breakthrough, secretActor.breakthrough)
+
+    linha.appendChild(
+        compararNumero(
+            ator.anoNascimento,
+            atorSecreto.anoNascimento
+        )
     );
 
-    row.appendChild(
-        comparePopularity(actor.popularity, secretActor.popularity)
+
+    linha.appendChild(
+        compararNumero(
+            ator.anoEstourou,
+            atorSecreto.anoEstourou
+        )
     );
 
-    row.appendChild(
-        compareText(actor.genre, secretActor.genre)
+
+    linha.appendChild(
+        compararPopularidade(
+            ator.popularidade,
+            atorSecreto.popularidade
+        )
     );
 
-    row.appendChild(
-        compareText(actor.nationality, secretActor.nationality)
+
+    linha.appendChild(
+        compararTexto(
+            ator.genero,
+            atorSecreto.genero
+        )
     );
 
-    row.appendChild(
-        compareText(actor.sex, secretActor.sex)
+
+    linha.appendChild(
+        compararTexto(
+            ator.nacionalidade,
+            atorSecreto.nacionalidade
+        )
     );
 
-    results.prepend(row);
 
-    const colors = Array.from(row.children)
+    linha.appendChild(
+        compararTexto(
+            ator.sexo,
+            atorSecreto.sexo
+        )
+    );
+
+
+    resultados.prepend(linha);
+
+
+    const emojis =
+        Array
+        .from(linha.children)
         .slice(1)
-        .map(cell => {
+        .map(
+            celula => {
 
-            if (cell.classList.contains("green"))
-                return "🟩";
+                if (
+                    celula.classList
+                    .contains("green")
+                ) {
 
-            if (cell.classList.contains("yellow"))
-                return "🟨";
+                    return "🟩";
 
-            return "⬛";
-        });
+                }
 
-    shareGrid.push(colors);
+                if (
+                    celula.classList
+                    .contains("yellow")
+                ) {
 
-    if (actor.name === secretActor.name) {
+                    return "🟨";
 
-        gameOver = true;
+                }
 
-        message.innerHTML =
-            "🎉 ACERTOU!<br>" +
-            "<span style='font-size:16px'>Era " +
-            secretActor.name +
-            "!</span>";
+                return "⬛";
 
-        shareButton.style.display = "inline-block";
-
-    } else if (attempts >= 10) {
-
-        gameOver = true;
-
-        message.innerHTML =
-            "😢 Fim das tentativas.<br>" +
-            "<span style='font-size:16px'>O ator era " +
-            secretActor.name +
-            ".</span>";
-
-        shareButton.style.display = "inline-block";
-    }
-}
-
-
-/* =========================================
-   COMPARAÇÕES
-   ========================================= */
-
-function createCell(text, color) {
-
-    const cell = document.createElement("div");
-
-    cell.className = "cell " + color;
-
-    cell.textContent = text;
-
-    return cell;
-}
-
-
-function compareText(value, secret) {
-
-    if (value === secret) {
-
-        return createCell(value, "green");
-
-    }
-
-    return createCell(value, "black");
-}
-
-
-function compareNumber(value, secret) {
-
-    if (value === secret) {
-
-        return createCell(value, "green");
-
-    }
-
-    const difference = Math.abs(value - secret);
-
-    if (difference <= 5) {
-
-        let arrow = value < secret ? " ↑" : " ↓";
-
-        return createCell(
-            value + arrow,
-            "yellow"
+            }
         );
 
+
+    resultadoCompartilhar.push(
+        emojis
+    );
+
+
+    if (
+        ator.nome ===
+        atorSecreto.nome
+    ) {
+
+        ganhou();
+
+        return;
+
     }
 
-    let arrow = value < secret ? " ↑" : " ↓";
 
-    return createCell(
-        value + arrow,
-        "black"
-    );
+    if (tentativas >= 10) {
+
+        perdeu();
+
+    }
+
 }
 
 
-function comparePopularity(value, secret) {
+/* =====================================================
+   COMPARAR TEXTO
+   ===================================================== */
 
-    if (value === secret) {
+function compararTexto(
+    valor,
+    secreto
+) {
 
-        return createCell(
-            "#" + value,
+    if (valor === secreto) {
+
+        return criarCelula(
+            valor,
             "green"
         );
 
     }
 
-    const difference = Math.abs(value - secret);
 
-    if (difference <= 10) {
+    return criarCelula(
+        valor,
+        "black"
+    );
 
-        let arrow = value > secret ? " ↓" : " ↑";
+}
 
-        return createCell(
-            "#" + value + arrow,
+
+/* =====================================================
+   COMPARAR NÚMEROS
+   ===================================================== */
+
+function compararNumero(
+    valor,
+    secreto
+) {
+
+    if (valor === secreto) {
+
+        return criarCelula(
+            valor,
+            "green"
+        );
+
+    }
+
+
+    const diferenca =
+        Math.abs(
+            valor - secreto
+        );
+
+
+    const seta =
+        valor < secreto
+            ? " ↑"
+            : " ↓";
+
+
+    if (diferenca <= 5) {
+
+        return criarCelula(
+            valor + seta,
             "yellow"
         );
 
     }
 
-    let arrow = value > secret ? " ↓" : " ↑";
 
-    return createCell(
-        "#" + value + arrow,
+    return criarCelula(
+        valor + seta,
         "black"
     );
+
 }
 
 
-/* =========================================
-   COMPARTILHAR
-   ========================================= */
+/* =====================================================
+   POPULARIDADE
+   ===================================================== */
 
-shareButton.onclick = function() {
+function compararPopularidade(
+    valor,
+    secreto
+) {
 
-    let text =
-        "🎬 ACTLE\n" +
-        "Actle de hoje\n\n";
+    if (valor === secreto) {
 
-    shareGrid.forEach(row => {
-
-        text += row.join("") + "\n";
-
-    });
-
-    text += "\n" + attempts + "/10";
-
-    if (navigator.share) {
-
-        navigator.share({
-            title: "ACTLE",
-            text: text
-        });
-
-    } else {
-
-        navigator.clipboard.writeText(text);
-
-        alert("Resultado copiado!");
+        return criarCelula(
+            "#" + valor,
+            "green"
+        );
 
     }
 
-};
+
+    const diferenca =
+        Math.abs(
+            valor - secreto
+        );
+
+
+    const seta =
+        valor > secreto
+            ? " ↓"
+            : " ↑";
+
+
+    if (diferenca <= 100) {
+
+        return criarCelula(
+            "#" + valor + seta,
+            "yellow"
+        );
+
+    }
+
+
+    return criarCelula(
+        "#" + valor + seta,
+        "black"
+    );
+
+}
+
+
+/* =====================================================
+   CRIAR CÉLULA
+   ===================================================== */
+
+function criarCelula(
+    texto,
+    classe
+) {
+
+    const celula =
+        document.createElement("div");
+
+
+    celula.className =
+        "cell " + classe;
+
+
+    celula.textContent =
+        texto;
+
+
+    return celula;
+
+}
+
+
+/* =====================================================
+   GANHOU
+   ===================================================== */
+
+function ganhou() {
+
+    acabou = true;
+
+
+    mensagem.innerHTML =
+        "🎉 ACERTOU!<br>" +
+        "<span style='font-size:16px'>" +
+        "O ator era " +
+        atorSecreto.nome +
+        "!" +
+        "</span>";
+
+
+    botaoCompartilhar.style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   PERDEU
+   ===================================================== */
+
+function perdeu() {
+
+    acabou = true;
+
+
+    mensagem.innerHTML =
+        "😢 FIM DAS TENTATIVAS<br>" +
+        "<span style='font-size:16px'>" +
+        "O ator era " +
+        atorSecreto.nome +
+        ".</span>";
+
+
+    botaoCompartilhar.style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   COMPARTILHAR
+   ===================================================== */
+
+botaoCompartilhar.onclick =
+    async function() {
+
+
+        let texto =
+            "🎬 ACTLE\n\n";
+
+
+        resultadoCompartilhar.forEach(
+            linha => {
+
+                texto +=
+                    linha.join("") +
+                    "\n";
+
+            }
+        );
+
+
+        texto +=
+            "\n" +
+            tentativas +
+            "/10";
+
+
+        if (
+            navigator.share
+        ) {
+
+            await navigator.share({
+
+                title: "ACTLE",
+
+                text: texto
+
+            });
+
+        }
+
+        else {
+
+            await navigator
+                .clipboard
+                .writeText(texto);
+
+
+            alert(
+                "Resultado copiado!"
+            );
+
+        }
+
+    };
+
+
+/* =====================================================
+   COMEÇAR
+   ===================================================== */
+
+carregarAtores();
 
 </script>
 
 </body>
-  </html>
+       </html>
