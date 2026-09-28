@@ -1,0 +1,43 @@
+name: Update ACTLE Actors
+
+on:
+  schedule:
+    - cron: "15 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-actors:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Update actors
+        env:
+          TMDB_TOKEN: ${{ secrets.TMDB_TOKEN }}
+        run: |
+          python scripts/update_actors.py
+
+      - name: Save updated actors
+        run: |
+          git config user.name "ACTLE Bot"
+          git config user.email "actle-bot@users.noreply.github.com"
+
+          git add actors.json
+
+          git diff --cached --quiet || git commit -m "Update daily actors"
+
+          git push
